@@ -1,0 +1,19 @@
+[
+    {
+        "transaction": {
+            "valor": 5000.0,
+            "localizacao": "BR",
+            "horario": "03:00",
+            "dispositivo": "desconhecido",
+            "historico_usuario": "baixo"
+        },
+        "fraude": true,
+        "risco": 1.0,
+        "motivos": [
+            "valor alto",
+            "horário incomum",
+            "dispositivo novo",
+            "histórico suspeito"
+        ]
+    }
+]

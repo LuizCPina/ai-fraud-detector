@@ -1,5 +1,6 @@
 from . import rules
 from .rules_config import RULES
+from app.repositories.transaction_repository import save_transaction
 
 REGRA_MAP = {
     "valor_alto": rules.regra_valor,
@@ -26,6 +27,18 @@ def analyze_transaction(transaction):
 
         if motivo:
             motivos.append(motivo)
+
+   ##salvar no registro de transações
+    transaction_data = transaction.model_dump()
+    transaction_data["horario"] = transaction.horario.strftime("%H:%M")       
+
+    record = {
+        "transaction": transaction_data,
+        "fraude": risco_total > 0.5,
+        "risco": round(risco_total, 2),
+        "motivos": motivos}
+    
+    save_transaction(record)
 
     return {
         "fraude": risco_total > 0.5,
