@@ -6,7 +6,7 @@ RULES = {
     },
     
     "localizacao_suspeita": {
-        "locais": ["BR", "US"],
+        "locais": ['IN', 'CN', 'RU'],
         "peso": 0.2,
         "mensagem": "localização suspeita"
 

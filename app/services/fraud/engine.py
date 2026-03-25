@@ -28,20 +28,20 @@ def analyze_transaction(transaction):
         if motivo:
             motivos.append(motivo)
 
-   ##salvar no registro de transações
-    transaction_data = transaction.model_dump()
-    transaction_data["horario"] = transaction.horario.strftime("%H:%M")       
+#    ##salvar no registro de transações
+#     transaction_data = transaction.model_dump()
+#     transaction_data["horario"] = transaction.horario.strftime("%H:%M")       
 
-    record = {
-        "transaction": transaction_data,
-        "fraude": risco_total > 0.5,
-        "risco": round(risco_total, 2),
-        "motivos": motivos}
+#     record = {
+#         "transaction": transaction_data,
+#         "fraude": risco_total > 0.5,
+#         "risco": round(risco_total, 2),
+#         "motivos": motivos}
     
-    save_transaction(record)
+#     save_transaction(record)
 
     return {
-        "fraude": risco_total > 0.5,
-        "risco": round(risco_total, 2),
+        "fraude_estimada": risco_total > 0.5,
+        "risco_estimado": round(risco_total, 2),
         "motivos": motivos
     }

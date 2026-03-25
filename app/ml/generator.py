@@ -2,37 +2,46 @@ from app.schemas.transaction import Transaction,DispositivoEnum, HistoricoEnum
 import random
 from datetime import time
 
-def generate_normal_transaction():
-    return {
-        "transaction": Transaction(
-            valor=random.uniform(1, 3000),
-            localizacao=random.choice(['BR', 'US']),
+def generate_transaction():
+    return Transaction( 
+            valor=random.uniform(1, 10000),
+            localizacao=random.choice(['BR', 'US','IN', 'CN', 'RU']),
             horario=time(
-                hour=random.randint(6, 23),
+                hour=random.randint(0, 23),
                 minute=random.randint(0, 59)
             ),
-            dispositivo=DispositivoEnum.conhecido,
-            historico_usuario=random.choice([HistoricoEnum.padrao, HistoricoEnum.alto])
-        ),
-        "fraude": False
-    }
+            dispositivo=random.choice([DispositivoEnum.conhecido, DispositivoEnum.desconhecido]),
+            historico_usuario=random.choice([HistoricoEnum.padrao, HistoricoEnum.alto, HistoricoEnum.baixo])
+        )
 
-def generate_fraud_transaction():
+
+def calculate_fraud_probability(transaction):
+    chance = 0.0
+
+    if transaction.valor > 3000:
+        chance += 0.4
+
+    if transaction.localizacao in ['IN', 'CN', 'RU']:
+        chance += 0.2
+    
+    if transaction.horario.hour < 6:
+        chance += 0.1
+
+    if transaction.dispositivo == DispositivoEnum.desconhecido:
+        chance += 0.2
+
+    if transaction.historico_usuario == HistoricoEnum.baixo:
+        chance += 0.3
+
+    return min(chance, 1.0)
+
+def generate_dataset_record():
+    transaction = generate_transaction()
+    chance = calculate_fraud_probability(transaction)
+    fraude  = random.random() < chance
+
     return {
-        "transaction": Transaction(
-            valor=random.uniform(3000, 10000),
-            localizacao=random.choice(['IN', 'CN', 'RU']),
-            horario=time(
-                hour=random.randint(0, 5),
-                minute=random.randint(0, 59)
-            ),
-            dispositivo=DispositivoEnum.desconhecido,
-            historico_usuario=HistoricoEnum.baixo
-        ),
-        "fraude": True
+        "transaction": transaction,
+        "chance": chance,
+        "fraude": fraude,
     }
-
-def generate_dataset_transaction():
-    if random.random() < 0.2:
-        return generate_fraud_transaction()
-    return generate_normal_transaction()

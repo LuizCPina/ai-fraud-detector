@@ -4,7 +4,7 @@ def regra_valor(transaction, config):
     return 0, None
 
 def regra_localizacao(transaction, config):
-    if transaction.localizacao  not in config["locais"]:
+    if transaction.localizacao in config["locais"]:
         return config["peso"], config["mensagem"]
     return 0, None
 
