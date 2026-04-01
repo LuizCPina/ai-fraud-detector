@@ -10,7 +10,7 @@ REGRA_MAP = {
     "historico_suspeito": rules.regra_historico
 }
 
-def analyze_transaction(transaction):
+def analyze_transaction(transaction, threshold):
     risco_total = 0
     motivos = []
 
@@ -41,7 +41,7 @@ def analyze_transaction(transaction):
 #     save_transaction(record)
 
     return {
-        "fraude_estimada": risco_total > 0.5,
+        "fraude_estimada": risco_total > threshold,
         "risco_estimado": round(risco_total, 2),
         "motivos": motivos
     }
