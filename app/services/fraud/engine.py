@@ -10,7 +10,7 @@ REGRA_MAP = {
     "historico_suspeito": rules.regra_historico
 }
 
-def analyze_transaction(transaction, threshold):
+def analyze_transaction(transaction, threshold=0.3):
     risco_total = 0
     motivos = []
 

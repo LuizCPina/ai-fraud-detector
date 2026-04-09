@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Detector de Fraude</title>
+    <style>
+        body {
+            font-family: Arial;
+            max-width: 500px;
+            margin: 40px auto;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        #resultado {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .fraude {
+            color: red;
+            font-weight: bold;
+        }
+
+        .normal {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Detector de Fraude</h2>
+
+    <form id="form">
+        
+        <label>Valor:</label>
+        <input type="number" id="valor" required>
+
+        <label>Localização:</label>
+        <select id="localizacao">
+            <option value="BR">BR</option>
+            <option value="US">US</option>
+            <option value="CN">CN</option>
+            <option value="IN">IN</option>
+            <option value="RU">RU</option>
+        </select>
+
+        <label>Horário:</label>
+        <input type="time" id="horario" required>
+
+        <label>Dispositivo:</label>
+        <select id="dispositivo">
+            <option value="conhecido">Conhecido</option>
+            <option value="desconhecido">Desconhecido</option>
+        </select>
+
+        <label>Histórico do Usuário:</label>
+        <select id="historico">
+            <option value="baixo">Baixo</option>
+            <option value="padrao">Médio</option>
+            <option value="alto">Alto</option>
+        </select>
+
+        <button type="submit">Analisar Transação</button>
+    </form>
+
+    <div id="resultado"></div>
+
+<script>
+document.getElementById('form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const resultadoDiv = document.getElementById('resultado');
+
+    try {
+        const valor = parseFloat(document.getElementById('valor').value);
+        const localizacao = document.getElementById('localizacao').value;
+        const horario = document.getElementById('horario').value;
+        const dispositivo = document.getElementById('dispositivo').value;
+        const historico = document.getElementById('historico').value;
+
+        if (!horario) {
+            resultadoDiv.innerHTML = "Preencha o horário.";
+            return;
+        }
+
+        const horarioFormatado = horario + ":00";
+
+        const payload = {
+            valor,
+            localizacao,
+            horario: horarioFormatado,
+            dispositivo,
+            historico_usuario: historico
+        };
+
+        console.log("Enviando:", payload);
+
+        resultadoDiv.innerHTML = "Analisando...";
+
+        const response = await fetch('/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Erro da API:", errorData);
+            throw new Error("Erro na API");
+        }
+
+        const data = await response.json();
+        console.log("Resposta:", data);
+
+        const fraude = data.fraude_estimada ?? data.fraude;
+        const risco = data.risco_estimado ?? data.risco;
+
+        resultadoDiv.innerHTML = `
+            <div class="${fraude ? "fraude" : "normal"}">
+                ${fraude ? "⚠️ FRAUDE DETECTADA" : "✅ Transação normal"}
+            </div>
+            <strong>Risco:</strong> ${(risco * 100).toFixed(2)}% <br>
+            <strong>Motivos:</strong> ${(data.motivos || []).join(", ") || "Nenhum"}
+        `;
+
+    } catch (error) {
+        console.error(error);
+        resultadoDiv.innerHTML = "Erro ao analisar transação.";
+    }
+});
+</script>
+
+</body>
+</html>
