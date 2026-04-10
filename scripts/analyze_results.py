@@ -1,6 +1,6 @@
 import json
 
-#dados = json.load(open("data/transactions.json", "r"))
+dados = json.load(open("data/transactions.json", "r"))
 
 def run (dados):
     tp = 0
@@ -34,4 +34,4 @@ def run (dados):
     print(f"Recall: {recall:.2f}")
 
 if __name__ == "__main__":
-    run()
+    run(dados)
